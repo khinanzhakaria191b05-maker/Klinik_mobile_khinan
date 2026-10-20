@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
-import 'ui/login.dart'; // Menjadikan halaman Login sebagai yang pertama muncul
+import 'helpers/user_info.dart';
+import 'ui/beranda.dart';
+import 'ui/login.dart';
 
-void main() => runApp(const MyApp());
+Future<void> main() async {
+  // Wajib ditambahkan jika main() menggunakan async
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Mengecek token yang tersimpan
+  var token = await UserInfo().getToken();
+  print("Token saat ini: $token");
+
+  // Melempar status token ke class MyApp
+  runApp(MyApp(token: token));
+}
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String? token;
+  const MyApp({super.key, this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +34,8 @@ class MyApp extends StatelessWidget {
         // Mengubah warna dasar komponen lain agar senada
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.brown),
       ),
-      home: const Login(),
+      // Logika pengecekan: Jika token kosong (null) buka Login, jika ada buka Beranda
+      home: token == null ? const Login() : const Beranda(),
     );
   }
 }
